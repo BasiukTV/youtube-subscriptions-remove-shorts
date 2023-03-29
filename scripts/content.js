@@ -22,30 +22,36 @@ const timerId = setInterval(() => {
     */
     const mutationCallback = (mutationList, observer) => {
 
-        // Look for SHORTS overlay icons
-        feedBrowser.querySelectorAll('[overlay-style="SHORTS"]').forEach((e) => {
+        // Look for SHORTS and UPCOMING overlay icons
+        let targets = [
+            feedBrowser.querySelectorAll('[overlay-style="SHORTS"]'),
+            feedBrowser.querySelectorAll('[overlay-style="UPCOMING"]')];
 
-            // We'll have to climb four parent elements before we can tell which layout is used.
-            for (var i = 0; i < 4; i++) {
-                e = e.parentElement;
-            }
+        // For each target, for each element in the target, hide that element
+        targets.forEach((t) => { t.forEach((e) => {
 
-            // Presence of ytd-grid-video-renderer CSS class indicates the Grid layout.
-            const isGridLayout = e.classList.contains("ytd-grid-video-renderer");
+                // We'll have to climb four parent elements before we can tell which layout is used.
+                for (var i = 0; i < 4; i++) {
+                    e = e.parentElement;
+                }
 
-            /* 
-                If grid layout is used - we need to climb one parent until we get to subscription feed item.
-                If list layout is used - we need to climb five parents for the same.
-            */
-            for (var i = 0; i < (isGridLayout ? 1 : 5); i++) {
-                e = e.parentElement;
-            }
+                // Presence of ytd-grid-video-renderer CSS class indicates the Grid layout.
+                const isGridLayout = e.classList.contains("ytd-grid-video-renderer");
 
-            // If this feed item is not hidden yet, hide it.
-            const hiddenAlready = e.style.display === 'none';
-            if (!hiddenAlready) {
-                e.style.display = 'none';
-            }
+                /*
+                    If grid layout is used - we need to climb one parent until we get to subscription feed item.
+                    If list layout is used - we need to climb five parents for the same.
+                */
+                for (var i = 0; i < (isGridLayout ? 1 : 5); i++) {
+                    e = e.parentElement;
+                }
+
+                // If this feed item is not hidden yet, hide it.
+                const hiddenAlready = e.style.display === 'none';
+                if (!hiddenAlready) {
+                    e.style.display = 'none';
+                }
+            });
         });
     };
 
