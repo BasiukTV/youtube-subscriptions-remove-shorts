@@ -27,6 +27,10 @@ const timerId = setInterval(() => {
             feedBrowser.querySelectorAll('[overlay-style="SHORTS"]'),
             feedBrowser.querySelectorAll('[overlay-style="UPCOMING"]')];
 
+        // Send the message to the background worker with the total number of items filtered out
+        chrome.runtime.sendMessage(
+            targets.reduce((running_sum, e) => running_sum + e.length, 0).toString());
+
         // For each target, for each element in the target, hide that element
         targets.forEach((t) => { t.forEach((e) => {
 
