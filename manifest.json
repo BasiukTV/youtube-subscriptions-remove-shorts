@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "No Shorts In YouTube Subs",
-    "version": "1.0",
-    "description": "Removes Shorts from YouTube subscriptions feed.",
+    "name": "YouTube Subs Filter",
+    "version": "1.1",
+    "description": "Filters out Shorts and Upcoming videos from the YouTube subscriptions feed.",
     "content_scripts": [
         {
           "js": ["scripts/content.js"],
@@ -10,5 +10,11 @@
             "https://www.youtube.com/feed/subscriptions*"
           ]
         }
-    ]
+    ],
+    "action" : {
+      "default_icon": {
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+      }
+    }
 }
