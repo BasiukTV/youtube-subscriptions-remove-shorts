@@ -20,16 +20,25 @@ const timerId = setInterval(() => {
         Callback when feedBrowser children change, which is admittedly pretty noisy, but,
         hopefully YouTube subscription feed is not a very dynamic page.
     */
-    const mutationCallback = (mutationList, observer) => {
+    const mutationCallback = async (mutationList, observer) => {
 
-        // Look for SHORTS and UPCOMING overlay icons
+        // Read in the filtering config from the local synchronized storage
+        const filter_shorts = (await chrome.storage.sync.get("filter_shorts")).filter_shorts;
+        const filter_upcoming = (await chrome.storage.sync.get("filter_upcoming")).filter_upcoming;
+        const show_counts = (await chrome.storage.sync.get("show_counts")).show_counts;
+
+        // Look for SHORTS and UPCOMING overlay icons (if corresponding filtering config is set)
         let targets = [
-            feedBrowser.querySelectorAll('[overlay-style="SHORTS"]'),
-            feedBrowser.querySelectorAll('[overlay-style="UPCOMING"]')];
+            (filter_shorts || undefined === filter_shorts) ? feedBrowser.querySelectorAll('[overlay-style="SHORTS"]') : [],
+            (filter_upcoming || undefined === filter_upcoming) ? feedBrowser.querySelectorAll('[overlay-style="UPCOMING"]') : []];
 
-        // Send the message to the background worker with the total number of items filtered out
-        chrome.runtime.sendMessage(
-            targets.reduce((running_sum, e) => running_sum + e.length, 0).toString());
+        // If configured, send the message to the background worker with the total number of items filtered out
+        if (show_counts || undefined === show_counts) {
+            chrome.runtime.sendMessage(targets.reduce((running_sum, e) => running_sum + e.length, 0).toString());
+        } else {
+            // Otherwise remove the badge
+            chrome.runtime.sendMessage("");
+        }
 
         // For each target, for each element in the target, hide that element
         targets.forEach((t) => { t.forEach((e) => {

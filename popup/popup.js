@@ -12,8 +12,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const mapping = {};
         mapping[this.name] = this.checked;
 
-        // Save the state
+        // Save the state to the synchronized storage
         chrome.storage.sync.set(mapping);
+
+        // Reload all the tabs with YT subscriptions open
+        chrome.tabs.query({url : "https://www.youtube.com/feed/subscriptions*"}, (tabs) => {
+            for (const t of tabs) {
+                chrome.tabs.reload(t.id);
+            }
+        });
     }
 
     // For every checkbox in popup.html
