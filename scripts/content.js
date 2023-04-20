@@ -28,7 +28,7 @@ const timerId = setInterval(() => {
         const show_counts = (await chrome.storage.sync.get("show_counts")).show_counts;
 
         // Look for SHORTS and UPCOMING overlay icons (if corresponding filtering config is set)
-        let targets = [
+        const targets = [
             (filter_shorts || undefined === filter_shorts) ? feedBrowser.querySelectorAll('[overlay-style="SHORTS"]') : [],
             (filter_upcoming || undefined === filter_upcoming) ? feedBrowser.querySelectorAll('[overlay-style="UPCOMING"]') : []];
 
@@ -62,10 +62,26 @@ const timerId = setInterval(() => {
                 // If this feed item is not hidden yet, hide it.
                 const hiddenAlready = e.style.display === 'none';
                 if (!hiddenAlready) {
+                    e.classList.add("YTSF-filtered-out");
                     e.style.display = 'none';
                 }
             });
         });
+
+        // Now we check that every item that was filtered out, should be filtered out, as YT is updating things in-place.
+        // For every item with YTSF-filtered-out
+        const verify = feedBrowser.getElementsByClassName("YTSF-filtered-out");
+        for (let e of verify) {
+            // If its children have no signs of being either Shorts or Upcoming (if we're filtering them out)...
+            if ( 0 ===
+                ((filter_shorts ? e.querySelectorAll('[overlay-style="SHORTS"]').length : 0) +
+                (filter_upcoming ? e.querySelectorAll('[overlay-style="UPCOMING"]').length : 0))
+            ) {
+                // We have to show those elements again
+                e.classList.remove("YTSF-filtered-out");
+                e.style.removeProperty('display');
+            }
+        };
     };
 
     // Execute the callback once even before any items change, for the initial removal of shorts.

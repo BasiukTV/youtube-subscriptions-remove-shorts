@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "YouTube Subs Filter",
-    "version": "1.2",
+    "version": "1.2.1",
     "description": "Filters out Shorts and Upcoming videos from the YouTube subscriptions feed.",
     "background": {
       "service_worker": "scripts/background.js"
